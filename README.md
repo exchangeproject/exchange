@@ -6,7 +6,7 @@ In order to run **exchange project** during development you need to do:
 
 Install dependencies on local machine(Fedora example):
 
-```shell
+```bash
 dnf install redis mongodb
 ```
 
@@ -21,7 +21,7 @@ Install dependencies, optionally within a virtualenv
 
 Using virtualenvwrapper:
 
-```shell
+```bash
 mkvirtualenv --no-site-packages exchange
 workon exchange
 pip install -r requirements.txt
@@ -29,7 +29,7 @@ pip install -r requirements.txt
 
 Or this way(preferred in my case):
 
-```shell
+```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -37,15 +37,21 @@ pip install -r requirements.txt
 
 ### Running
 
-Once the dependencies are installed, run the app:
+Ensure that mongodb-server is up and running
 
-```shell
-python manage.py runserver
+```bash
+systemctl start mongod
 ```
+
+Once the dependencies are installed, run the app:
 
 For available commands, run:
 
-```shell
+```bash
+python manage.py --help
+```
+
+```bash
 python manage.py runserver
 ```
 
@@ -53,7 +59,7 @@ python manage.py runserver
 
 Create a branch with the feature's name
 
-```shell
+```bash
 git checkout -b new_feature
 ```
 
@@ -62,7 +68,7 @@ git checkout -b new_feature
 1. flask
 2. flask-redis
 3. flask-restful
-4. flask-mongoalchemy
+4. flask-pymongo
 
 
 
