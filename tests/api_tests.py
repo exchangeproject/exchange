@@ -11,7 +11,7 @@ class APITestCase(unittest.TestCase):
     def test_address_valid(self):
         data = dict(address=r'2GgFvqoyk9RjwVzj8tqfcXVXB4orBwoc9qv')
         response = self.app.get(
-            '/api/v1.0/addresses/{}/isvalid'.format(data),
+            '/api/addresses/{}/isvalid'.format(data),
             data=json.dumps(data),
             content_type='application/json'
         )
@@ -22,7 +22,7 @@ class APITestCase(unittest.TestCase):
     def test_address_invalid(self):
         data = dict(address=r'12345678')
         response = self.app.get(
-            '/api/v1.0/addresses/{}/isvalid'.format(data),
+            '/api/addresses/{}/isvalid'.format(data),
             data=json.dumps(data),
             content_type='application/json'
         )
@@ -32,13 +32,13 @@ class APITestCase(unittest.TestCase):
 
     def test_get_assets(self):
         response = self.app.get(
-            '/api/v1.0/assets', content_type='application/json')
+            '/api/assets', content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
     def test_get_asset(self):
         data = dict(assetid=1)
         response = self.app.get(
-            '/api/v1.0/assets',
+            '/api/assets',
             data=json.dumps(data),
             content_type='application/json'
         )
@@ -46,35 +46,35 @@ class APITestCase(unittest.TestCase):
 
     def test_pending_events_cashin(self):
         response = self.app.get(
-            '/api/v1.0/pending-events/cashin',
+            '/api/pending-events/cashin',
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 200)
 
     def test_pending_events_cashout_started(self):
         response = self.app.get(
-            '/api/v1.0/pending-events/cashout-started',
+            '/api/pending-events/cashout-started',
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 200)
 
     def test_pending_events_cashout_completed(self):
         response = self.app.get(
-            '/api/v1.0/pending-events/cashout-completed',
+            '/api/pending-events/cashout-completed',
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 200)
 
     def test_pending_events_cashout_failed(self):
         response = self.app.get(
-            '/api/v1.0/pending-events/cashout-failed',
+            '/api/pending-events/cashout-failed',
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 200)
 
     def test_wallets(self):
         response = self.app.post(
-            '/api/v1.0/wallets',
+            '/api/wallets',
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 200)
@@ -86,7 +86,7 @@ class APITestCase(unittest.TestCase):
         # FIXME Gives 400?
         data = dict(address=r'2GgFvqoyk9RjwVzj8tqfcXVXB4orBwoc9qv')
         response = self.app.post(
-            '/api/v1.0/wallets/{}/cashout'.format(data),
+            '/api/wallets/{}/cashout'.format(data),
             data=json.dumps(data),
             content_type='application/json'
         )
@@ -94,7 +94,7 @@ class APITestCase(unittest.TestCase):
 
     def test_is_alive(self):
         response = self.app.get(
-            '/api/v1.0/isalive', content_type='application/json')
+            '/api/isalive', content_type='application/json')
         self.assertEqual(response.status_code, 200)
         json_response = json.loads(response.get_data(as_text=True))
         self.assertIn('name', json_response)
@@ -104,7 +104,7 @@ class APITestCase(unittest.TestCase):
 
     def test_api_capabilities(self):
         response = self.app.get(
-            '/api/v1.0/capabilities', content_type='application/json')
+            '/api/capabilities', content_type='application/json')
         self.assertEqual(response.status_code, 200)
         json_response = json.loads(response.get_data(as_text=True))
         self.assertIn('isTransactionsRebuildingSupported', json_response)
