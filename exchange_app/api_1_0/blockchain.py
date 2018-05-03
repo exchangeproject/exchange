@@ -1,3 +1,4 @@
+import json
 import requests
 import logging
 from .. import app
@@ -56,23 +57,28 @@ def create_wallet():
     """
 
     # generate new seed
-    new_seed = requests.get(form_url(app_config.SKYCOIN_NODE_URL, "/wallet/newSeed")).json()
+    new_seed = requests.get(
+        form_url(app_config.SKYCOIN_NODE_URL, "/wallet/newSeed")
+    ).json()
 
     if not new_seed or "seed" not in new_seed:
         return {"status": 500, "error": "Unknown server error"}
 
     # generate CSRF token
-    CSRF_token = requests.get(form_url(app_config.SKYCOIN_NODE_URL, "/csrf")).json()
+    CSRF_token = requests.get(
+        form_url(app_config.SKYCOIN_NODE_URL, "/csrf")
+    ).json()
 
     if not CSRF_token or "csrf_token" not in CSRF_token:
         return {"status": 500, "error": "Unknown server error"}
 
     # create the wallet from seed
     # TODO: Where to get labels? How about scan?
-    resp = requests.post(form_url(app_config.SKYCOIN_NODE_URL, "/wallet/create"),
-                         {"seed": new_seed["seed"],
-                             "label": "wallet123", "scan": "5"},
-                         headers={'X-CSRF-Token': CSRF_token['csrf_token']})
+    resp = requests.post(
+        form_url(app_config.SKYCOIN_NODE_URL, "/wallet/create"),
+        {"seed": new_seed["seed"], "label": "wallet123", "scan": "5"},
+        headers={'X-CSRF-Token': CSRF_token['csrf_token']}
+    )
 
     if not resp:
         return {"status": 500, "error": "Unknown server error"}
@@ -90,11 +96,15 @@ def create_wallet():
         "address": new_wallet["entries"][0]["address"]
     }
 
+
 def spend(values):
     """
     Transfer balance
     """
-    resp = requests.post(form_url(app_config.SKYCOIN_NODE_URL, "/wallet/spend"), data=values)
+    resp = requests.post(
+        form_url(app_config.SKYCOIN_NODE_URL, "/wallet/spend"),
+        data=values
+    )
 
     if not resp.json:
         return {"status": 500, "error": "Unknown server error"}
@@ -121,7 +131,10 @@ def get_balance(address):
     """
 
     values = {"addrs": address}
-    balances = requests.get(form_url(app_config.SKYCOIN_NODE_URL, "/balance"), params=values)
+    balances = requests.get(
+        form_url(app_config.SKYCOIN_NODE_URL, "/balance"),
+        params=values
+    )
 
     if not balances.json:
         return {"status": 500, "error": "Unknown server error"}
@@ -133,7 +146,7 @@ def get_balance(address):
     return balances.json()['confirmed']['coins']
 
 
-def get_balance_scan(address, start_block = 1):
+def get_balance_scan(address, start_block=1):
     """
     get the balance of given address in blockchain (use block scanning)
     """
@@ -141,49 +154,50 @@ def get_balance_scan(address, start_block = 1):
     block_count = get_block_count()
 
     if start_block > block_count:
-        return {"status": 400, "error": "Start block higher that block height", 'block': block_count}
-
-        
+        return {
+            "status": 400,
+            "error": "Start block higher that block height",
+            'block': block_count
+        }
     blocks = get_block_range(start_block, block_count)
-    
+
     if 'error' in blocks:
         return blocks
-    
+
     balance = 0
     unspent_outputs = dict()
-    
-    for block in blocks:   #Scan the block range
+
+    for block in blocks:   # Scan the block range
         for txn in block['body']['txns']:
-            
+
             inputs = txn['inputs']
             outputs = txn['outputs']
-            
-            #Outgoing
+
+            # Outgoing
             balance_out = 0
             for input in inputs:
                 if input in unspent_outputs:
                     balance_out += unspent_outputs.pop(input)
-                    
-            #Incoming
+
+            # Incoming
             balance_in = 0
             for output in outputs:
                 if output['dst'] == address:
                     balance_in += float(output['coins'])
                     unspent_outputs[output['uxid']] = float(output['coins'])
-
-                    
             balance += balance_in
             balance -= balance_out
-    
+
     return {'balance': balance, 'block': block_count}
-    
-    
+
+
 def get_block_count():
     """
     Get the current block height of blockchain
     """
-    progress = requests.get(form_url(base_url, "/blockchain/progress"))
-
+    progress = requests.get(
+        form_url(app_config.SKYCOIN_NODE_URL, "/blockchain/progress")
+    )
     return progress.json()['current']
 
 
@@ -191,39 +205,138 @@ def get_block_range(start_block, end_block):
     """
     returns the blocks from blockchain in the specified range
     """
-    
+
     values = {"start": start_block, "end": end_block}
-    result = requests.get(form_url(base_url, "/blocks"), params=values)
-    
+    result = requests.get(
+        form_url(app_config.SKYCOIN_NODE_URL, "/blocks"),
+        params=values
+    )
+
     if not result.json:
         return {"status": 500, "error": "Unknown server error"}
-        
+
     return result.json()['blocks']
-     
+
 
 def get_block_by_hash(hash):
     """
     returns the blocks from blockchain in the specified range
     """
-    
+
     values = {"hash": hash}
-    result = requests.get(form_url(base_url, "/block"), params=values)
-    
+    result = requests.get(
+        form_url(app_config.SKYCOIN_NODE_URL, "/block"),
+        params=values
+    )
     if not result.json:
         return {"status": 500, "error": "Unknown server error"}
-        
     return result.json()
-    
-    
+
+
 def get_block_by_seq(seqnum):
     """
     returns the blocks from blockchain in the specified range
     """
-    
+
     values = {"seq": seqnum}
-    result = requests.get(form_url(base_url, "/block"), params=values)
-    
+    result = requests.get(
+        form_url(app_config.SKYCOIN_NODE_URL, "/block"),
+        params=values
+    )
     if not result.json:
         return {"status": 500, "error": "Unknown server error"}
-        
     return result.json()
+
+
+def get_unconfirmed_txs():
+    """
+    get unconfirmed transactions
+    """
+
+    resp = requests.get(
+        form_url(app_config.SKYCOIN_NODE_URL, "/pendingTxs")
+    )
+    if not resp:
+        return {"status": 500, "error": "Unknown server error"}
+    if resp.status_code != 200:
+        return {"status": 500, "error": "Unknown server error"}
+    return resp.json()
+
+
+def get_tx_info(txid):
+    """
+    Get transaction info by id
+    """
+
+    values = {"txid": txid}
+    resp = requests.get(
+        form_url(app_config.SKYCOIN_NODE_URL, "/transaction"),
+        params=values
+    )
+    if not resp.json:
+        return {"status": 500, "error": "Unknown server error"}
+    return resp.json()
+
+
+def get_raw_tx(txid):
+    """
+    Get raw tx by id
+    """
+
+    values = {"txid": txid}
+    resp = requests.get(
+        form_url(app_config.SKYCOIN_NODE_URL, "/rawtx"),
+        params=values
+    )
+    if not resp.json:
+        return {"status": 500, "error": "Unknown server error"}
+    return resp.json()
+
+
+def inject_raw_tx(rawtx):
+    """
+    Broadcasts an encoded transaction to the network
+    """
+
+    csrf = requests.get(form_url(app_config.SKYCOIN_NODE_URL, "/csrf")).json()
+
+    if not csrf or "csrf_token" not in csrf:
+        return {"status": 500, "error": "Unknown server error"}
+
+    resp = requests.post(
+        form_url(app_config.SKYCOIN_NODE_URL, "/injectTransaction"),
+        data=json.dumps(rawtx),
+        headers={'X-CSRF-Token': csrf['csrf_token']}
+    )
+    if resp.status_code == 503:
+        return {"status": 503, "error": "Service Unavailable"}
+    if not resp.json:
+        return {"status": 500, "error": "Unknown server error"}
+    return resp.json()
+
+
+def get_tx_address_related(values):
+    """
+    Get transactions that are addresses related
+    """
+
+    resp = requests.get(
+        form_url(app_config.SKYCOIN_NODE_URL, "/transactions"),
+        params=values
+    )
+    if not resp.json:
+        return {"status": 500, "error": "Unknown server error"}
+    return resp.json()
+
+
+def resend_unconfirmed_txs():
+    """
+    Resend unconfirmed transactions
+    """
+
+    resp = requests.get(
+        form_url(app_config.SKYCOIN_NODE_URL, "/resendUnconfirmedTxns")
+    )
+    if not resp.json:
+        return {"status": 500, "error": "Unknown server error"}
+    return resp.json()
