@@ -70,5 +70,3 @@ git checkout -b new_feature
 3. flask-restful
 4. flask-pymongo
 
-
-
