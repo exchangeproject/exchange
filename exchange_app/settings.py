@@ -23,7 +23,7 @@ class Config(object):
     REDIS_HOST = '127.0.0.1'
     REDIS_PORT = 6379
     #: SKYCOIN
-    SKYCOIN_NODE_URL = 'http://localhost:6420/'
+    SKYCOIN_NODE_URL = 'http://localhost:6420/api/v1'
 
 
 class ProductionConfig(Config):

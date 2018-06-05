@@ -7,89 +7,98 @@ from ..models import delete_transaction_observation_to_address, delete_transacti
 from ..models import get_transactions_from, get_transactions_to, update_index
 #from .redis_interface import get_cont_address_transfers_from, set_cont_address_transfers_from, del_cont_address_transfers_from
 #from .redis_interface import get_cont_address_transfers_to, set_cont_address_transfers_to, del_cont_address_transfers_to
-import logging
-from .. import app
 
 
 @api.route('/transactions/history/from/<string:address>', methods=['GET'])
 def get_history_from_address(address):
     """
-    Returns completed transactions that transfer fund from the address 
+    Returns completed transactions that transfer fund from the address
     """
-    
+
     if not exists_address_transfer_observation_from(address):
-        return make_response(jsonify(build_error('No content. transactions from the address are not observed')), 204)
-    
+        return make_response(
+            jsonify(build_error('No content. transactions from the address are not observed')),
+            204
+        )
+
     take = request.args.get('take')
     if take is None:
         take = 0
     else:
         take = int(take)
-    
+
     afterhash = request.args.get('afterHash')
     if afterhash is None:
-        afterhash = ""  
-       
-    update_index()   
+        afterhash = ""
+
+    update_index()
     items = get_transactions_from(address, afterhash)
-    
+
     if 'error' in items:
-        return make_response(jsonify(build_error(items['error'])), items['status'])
+        return make_response(
+            jsonify(build_error(items['error'])),
+            items['status']
+        )
 
     response = items if take == 0 else items[0:take]
 
     return jsonify(response)
-    
-    
+
+
 @api.route('/transactions/history/to/<string:address>', methods=['GET'])
 def get_history_to_address(address):
     """
-    Returns completed transactions that transfer fund to the address 
+    Returns completed transactions that transfer fund to the address
     """
-    
+
     if not exists_address_transfer_observation_to(address):
-        return make_response(jsonify(build_error('No content: transactions to the address are not observed')), 204)
-    
+        return make_response(
+            jsonify(build_error('No content: transactions to the address are not observed')),
+            204
+        )
+
     take = request.args.get('take')
     if take is None:
         take = 0
     else:
         take = int(take)
-    
+
     afterhash = request.args.get('afterHash')
     if afterhash is None:
-        afterhash = ""  
-       
-    update_index() 
+        afterhash = ""
+
+    update_index()
     items = get_transactions_to(address, afterhash)
 
     response = items if take == 0 else items[0:take]
 
     return jsonify(response)
-    
-    
-    
+
+
 @api.route('/transactions/history/from/<string:address>/observation', methods=['DELETE'])
 def del_history_from_address(address):
     """
     Stops observation of the transactions that transfer fund from the address
     """
-    
+
     result = delete_transaction_observation_from_address(address)
 
     # if successfully deleted from observation list, return a plain 200
     if "error" in result:
-        return make_response(jsonify(build_error(result["error"])), result["status"])
+        return make_response(
+            jsonify(build_error(result["error"])),
+            result["status"]
+        )
     else:
         return ""
-        
-    
+
+
 @api.route('/transactions/history/to/<string:address>/observation', methods=['DELETE'])
 def del_history_to_address(address):
     """
-    Stops observation of the transactions that transfer fund to the address 
+    Stops observation of the transactions that transfer fund to the address
     """
-    
+
     result = delete_transaction_observation_to_address(address)
 
     # if successfully deleted from observation list, return a plain 200
@@ -97,35 +106,39 @@ def del_history_to_address(address):
         return make_response(jsonify(build_error(result["error"])), result["status"])
     else:
         return ""
-        
+
 
 @api.route('/transactions/history/from/<string:address>/observation', methods=['POST'])
 def add_history_from_address(address):
     """
-    Starts observation of the transactions that transfer fund from the address 
+    Starts observation of the transactions that transfer fund from the address
     """
-    
+
     result = add_transaction_observation_from_address(address)
-    
+
     # if successfully stored in observation list, return a plain 200
     if "error" in result:
-        return make_response(jsonify(build_error(result["error"])), result["status"])
+        return make_response(
+            jsonify(build_error(result["error"])),
+            result["status"]
+        )
     else:
         return ""
-    
-    
+
+
 @api.route('/transactions/history/to/<string:address>/observation', methods=['POST'])
 def add_history_to_address(address):
     """
     Starts observation of the transactions that transfer fund from the address
     """
-    
+
     result = add_transaction_observation_to_address(address)
-    
+
     # if successfully stored in observation list, return a plain 200
     if "error" in result:
-        return make_response(jsonify(build_error(result["error"])), result["status"])
+        return make_response(
+            jsonify(build_error(result["error"])),
+            result["status"]
+        )
     else:
         return ""
-    
-

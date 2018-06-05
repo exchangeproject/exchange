@@ -9,9 +9,9 @@ class APITestCase(unittest.TestCase):
         self.app = app.test_client()
 
     def test_address_valid(self):
-        data = dict(address=r'2GgFvqoyk9RjwVzj8tqfcXVXB4orBwoc9qv')
+        data = dict(address=r'oD9cLwyArH4mVV7rG8KfKbhi2fZQeTUeQN')
         response = self.app.get(
-            '/v1.0/api/addresses/{}/isvalid'.format(data),
+            '/api/v1/addresses/{}/isvalid'.format(data),
             data=json.dumps(data),
             content_type='application/json'
         )
@@ -22,7 +22,7 @@ class APITestCase(unittest.TestCase):
     def test_address_invalid(self):
         data = dict(address=r'12345678')
         response = self.app.get(
-            '/v1.0/api/addresses/{}/isvalid'.format(data),
+            '/api/v1/addresses/{}/isvalid'.format(data),
             data=json.dumps(data),
             content_type='application/json'
         )
@@ -32,13 +32,13 @@ class APITestCase(unittest.TestCase):
 
     def test_get_assets(self):
         response = self.app.get(
-            '/v1.0/api/assets', content_type='application/json')
+            '/api/v1/assets', content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
     def test_get_asset(self):
         data = dict(assetid=1)
         response = self.app.get(
-            '/v1.0/api/assets',
+            '/api/v1/assets',
             data=json.dumps(data),
             content_type='application/json'
         )
@@ -46,47 +46,47 @@ class APITestCase(unittest.TestCase):
 
     def test_pending_events_cashin(self):
         response = self.app.get(
-            '/v1.0/api/pending-events/cashin',
+            '/api/v1/pending-events/cashin',
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 200)
 
     def test_pending_events_cashout_started(self):
         response = self.app.get(
-            '/v1.0/api/pending-events/cashout-started',
+            '/api/v1/pending-events/cashout-started',
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 200)
 
     def test_pending_events_cashout_completed(self):
         response = self.app.get(
-            '/v1.0/api/pending-events/cashout-completed',
+            '/api/v1/pending-events/cashout-completed',
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 200)
 
     def test_pending_events_cashout_failed(self):
         response = self.app.get(
-            '/v1.0/api/pending-events/cashout-failed',
+            '/api/v1/pending-events/cashout-failed',
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 200)
 
     def test_wallets(self):
         response = self.app.post(
-            '/v1.0/api/wallets',
+            '/api/v1/wallets',
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 200)
         json_response = json.loads(response.get_data(as_text=True))
-        self.assertIn('privateKey', json_response)
+        self.assertIn('publicKey', json_response)
         self.assertIn('address', json_response)
 
     def test_wallets_cashout(self):
         # FIXME Gives 400?
-        data = dict(address=r'2GgFvqoyk9RjwVzj8tqfcXVXB4orBwoc9qv')
+        data = dict(address=r'oD9cLwyArH4mVV7rG8KfKbhi2fZQeTUeQN')
         response = self.app.post(
-            '/v1.0/api/wallets/{}/cashout'.format(data),
+            '/api/v1/wallets/{}/cashout'.format(data),
             data=json.dumps(data),
             content_type='application/json'
         )
@@ -94,7 +94,7 @@ class APITestCase(unittest.TestCase):
 
     def test_is_alive(self):
         response = self.app.get(
-            '/v1.0/api/isalive', content_type='application/json')
+            '/api/v1/isalive', content_type='application/json')
         self.assertEqual(response.status_code, 200)
         json_response = json.loads(response.get_data(as_text=True))
         self.assertIn('name', json_response)
@@ -104,7 +104,7 @@ class APITestCase(unittest.TestCase):
 
     def test_api_capabilities(self):
         response = self.app.get(
-            '/v1.0/api/capabilities', content_type='application/json')
+            '/api/v1/capabilities', content_type='application/json')
         self.assertEqual(response.status_code, 200)
         json_response = json.loads(response.get_data(as_text=True))
         self.assertIn('isTransactionsRebuildingSupported', json_response)

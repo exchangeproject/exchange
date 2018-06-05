@@ -31,4 +31,4 @@ mongo = PyMongo(app)
 
 # Business Logic
 from .api_1_0 import api as api_blueprint
-app.register_blueprint(api_blueprint, url_prefix='/v1.0/api/')
+app.register_blueprint(api_blueprint, url_prefix='/api/v1')
