@@ -108,6 +108,20 @@ Create a branch with the feature's name
 git checkout -b new_feature
 ```
 
+### Testing
+
+In order to run the tests you must install `python-nose` package
+
+```shell
+pip install nose
+```
+And then, you should be able to run the tests:
+
+```shell
+ENVIRONMENT=TESTING nosetests
+```
+
+
 ### Technologies and stacks
 
 1. flask
