@@ -31,7 +31,6 @@ class ProductionConfig(Config):
     REDIS_PORT = 6379
     #: SKYCOIN
     SKYCOIN_NODE_URL = ''
-    LIBSKYCOIN_PATH = ''
 
 
 class DevelopmentConfig(Config):
@@ -52,7 +51,6 @@ class DevelopmentConfig(Config):
     REDIS_PORT = 6379
     #: SKYCOIN
     SKYCOIN_NODE_URL = 'http://localhost:6420/'
-    LIBSKYCOIN_PATH = os.path.join(*('exchange_app/libskycoin.so'.split('/')))
 
 
 class TestingConfig(Config):
@@ -73,7 +71,6 @@ class TestingConfig(Config):
     REDIS_PORT = 6379
     #: SKYCOIN
     SKYCOIN_NODE_URL = 'http://localhost:6420/'
-    LIBSKYCOIN_PATH = os.path.join(*('exchange_app/libskycoin.so'.split('/')))
 
 
 environment = os.getenv('ENVIRONMENT', 'DEVELOPMENT').lower()
