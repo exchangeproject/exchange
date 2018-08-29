@@ -15,6 +15,7 @@ class Config(object):
     SERVER_NAME = 'localhost:5000'
     #: REST API
     DEFAULT_LIST_LENGTH = 10
+    VERIFY_SSL = False
 
 
 class ProductionConfig(Config):
@@ -37,6 +38,7 @@ class ProductionConfig(Config):
     SKYCOIN_WALLET_SHARED = False
     SKYCOIN_FIBER_ASSET = ''
     SKYCOIN_FIBER_NAME = ''
+    VERIFY_SSL = False
 
 
 class DevelopmentConfig(Config):
@@ -60,6 +62,7 @@ class DevelopmentConfig(Config):
     SKYCOIN_FIBER_NAME = "Skycoin"
     #: Lykke
     LYKKE_API_VERSION = '1.3.0'
+    VERIFY_SSL = False
 
 
 class TestingConfig(Config):
@@ -81,6 +84,7 @@ class TestingConfig(Config):
     SKYCOIN_WALLET_SHARED = False
     SKYCOIN_FIBER_ASSET = "SKY"
     SKYCOIN_FIBER_NAME = "Skycoin"
+    VERIFY_SSL = False
 
 
 environment = os.getenv('ENVIRONMENT', 'DEVELOPMENT').lower()

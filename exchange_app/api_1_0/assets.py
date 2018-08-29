@@ -20,7 +20,7 @@ def get_asset(assetid):
         return jsonify(response_data)
 
     return make_response(jsonify(build_error("Specified asset not found")), 204)
- 
+
 
 @api.route('/assets', methods=['GET'])
 def get_assets_list():
@@ -56,4 +56,3 @@ def get_assets_list():
             ]
         }
     return jsonify(response_data)
-

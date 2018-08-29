@@ -72,7 +72,7 @@ class ApiTestCase(BaseApiTestCase):
 
     def test_get_assets(self):
         response = self.app.get(URL_ASSETS, content_type='application/json')
-            
+
         self.assertEqual(response.status_code, 200)
         json_response = json.loads(response.get_data(as_text=True))
         self.assertIn('continuation', json_response)
@@ -142,7 +142,7 @@ class ApiTestCase(BaseApiTestCase):
         self.assertEqual(json_response['isPublicAddressExtensionRequired'], False)
         self.assertEqual(json_response['isReceiveTransactionRequired'], False)
         self.assertEqual(json_response['canReturnExplorerUrl'], True)
-        
+
     def test_sign_noparams(self):
         response = self.app.post(URL_SIGN, content_type='application/json')
         #test response code is 400 without parameters

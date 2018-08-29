@@ -10,25 +10,27 @@ def create_wallet():
     Create the wallet in blockchain
     """
 
-    # generate CSRF token
-    CSRF_token = app.lykke_session.get(form_url(app_config.SKYCOIN_NODE_URL, "/api/v1/csrf")).json()
-
-    if not CSRF_token or "csrf_token" not in CSRF_token:
-        return {"status": 500, "error": "Unknown server error"}
-
     # generate new seed
     new_seed = app.lykke_session.get(
         form_url(app_config.SKYCOIN_NODE_URL, "/api/v1/wallet/newSeed?entropy=128"),
-        headers={'X-CSRF-Token': CSRF_token['csrf_token']}).json()
+        verify = app_config.VERIFY_SSL).json()
 
     if not new_seed or "seed" not in new_seed:
+        return {"status": 500, "error": "Unknown server error"}
+
+	# generate CSRF token
+    CSRF_token = app.lykke_session.get(form_url(app_config.SKYCOIN_NODE_URL, "/api/v1/csrf"),
+        verify = app_config.VERIFY_SSL).json()
+
+    if not CSRF_token or "csrf_token" not in CSRF_token:
         return {"status": 500, "error": "Unknown server error"}
 
     # create the wallet from seed
     resp = app.lykke_session.post(form_url(app_config.SKYCOIN_NODE_URL, "/api/v1/wallet/create"),
                          {"seed": new_seed["seed"],
                              "label": "wallet123", "scan": "5"},
-                         headers={'X-CSRF-Token': CSRF_token['csrf_token']})
+                         headers={'X-CSRF-Token': CSRF_token['csrf_token']},
+                         verify = app_config.VERIFY_SSL)
 
     if not resp:
         return {"status": 500, "error": "Unknown server error"}

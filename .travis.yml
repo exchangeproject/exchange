@@ -1,48 +1,48 @@
-# this file is *not* meant to cover or endorse the use of travis, but rather to
-# help confirm pull requests to this project.
-
 sudo: required
-
 services:
-  - docker
-
+- docker
 matrix:
   include:
-    - os: linux
-      language: python
-      python: 3.4
-      env:
-        - TOXENV=py34
-        - PYTHON=3.4
-    - os: linux
-      language: python
-      python: 3.5
-      env:
-        - TOXENV=py35
-        - PYTHON=3.5
-    - os: linux
-      language: python
-      python: 3.6
-      env:
-        - TOXENV=py36
-        - PYTHON=3.6
-      addons:
-        apt:
-          sources: [deadsnakes]
-          packages: [python3.6]
-
+  - os: linux
+    language: python
+    python: 3.4
+    env:
+    - TOXENV=py34
+    - PYTHON=3.4
+  - os: linux
+    language: python
+    python: 3.5
+    env:
+    - TOXENV=py35
+    - PYTHON=3.5
+  - os: linux
+    language: python
+    python: 3.6
+    env:
+    - TOXENV=py36
+    - PYTHON=3.6
+    addons:
+      apt:
+        sources:
+        - deadsnakes
+        packages:
+        - python3.6
 before_install:
-
+- openssl aes-256-cbc -K $encrypted_2c77414c66d3_key -iv $encrypted_2c77414c66d3_iv
+  -in seeds.json.enc -out tests/data/skycoin/seeds.json -d
 install:
-    - sudo pip install tox-travis
-    - mkdir swig_build && cd swig_build && wget http://prdownloads.sourceforge.net/swig/swig-3.0.12.tar.gz && tar -zxf swig-3.0.12.tar.gz && cd swig-3.0.12 && sudo ./configure --prefix=/usr && sudo make && sudo make install && cd ../../ && sudo rm -rf swig_build
-    - eval "$(gimme 1.10)"
-    - go version
+- sudo pip install tox-travis
+- mkdir swig_build && cd swig_build && wget http://prdownloads.sourceforge.net/swig/swig-3.0.12.tar.gz
+  && tar -zxf swig-3.0.12.tar.gz && cd swig-3.0.12 && sudo ./configure --prefix=/usr
+  && sudo make && sudo make install && cd ../../ && sudo rm -rf swig_build
+- eval "$(gimme 1.10)"
+- go version
 after_failure:
-    - cat ./.tox/${TOXENV}/log/${TOXENV}-*.log
-
+- cat ./.tox/${TOXENV}/log/${TOXENV}-*.log
 script: tox
-
 notifications:
   email: false
   webhooks: https://fathomless-fjord-24024.herokuapp.com/notify
+env:
+  matrix:
+    secure: bSfQak2r7oJs3DJJVgVjL3lYIazwhzMmk6O47fcQ6Ni9o9/xmG73lfnOKoPoRhqGLh1uVrNBpOm1ZofbNL+ID8GS7xwObeikv5E5vVhB/YR3+VZ3mAsr+MGZ8QG7uowI0b/Y0uIRqT6PWrf9JGdGdsLsXicWPcUwmSUaM7mNm9Br7jk3nWC63OCPTbXRD5Mg8gmC1geF5eb4CfG2DcSF7UMxUSk+aOD/U+42TPxNAT1jBAt2Z/tB7+hiQIZmqik4P8Isg1zmAkFP67CuZ0pr03jYlRZ74icvCpSgTQVR2CKRfXaD2H1u4ulTV16MFJKp5OVMdY8wDxJckNq0gTFLW15XUIWq3iKYMlDSMFKJHip6s8Mgm0FaRAxStonmXsCCWinSj5UK3vxZkR+otV4eHfpa83BBi+NB/d/4/eOJ3oOAx8GFg6PT3prLp4VAh+a60NaoZ9mZxwaeCSaX54lIVgMdtSe4twb2c/3hHuKwoBWdKtfTkZG/or2cj3NmyYW5TB5xYxK1rUk3mExSdxdwg1FOzYjWsoirVyjNQRUxdxJuivXKTHBSpblO6XDbmsP3x2TIDwv9vcgHrNQRZGdTznbM2wJElaH3lVRv0ZA0PMSAK5a2X8mXEoO9CD0hHZf0xWYjRMaa5jinRP4OATnUbOy6KTtS0MMk2Ss4Yp4Ef7o=

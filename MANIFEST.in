@@ -10,6 +10,7 @@ include Makefile
 #include skycoin.py
 include *.py
 include *.txt
+include *.enc
 
 #recursive-include . *.s
 #recursive-include . *.go
