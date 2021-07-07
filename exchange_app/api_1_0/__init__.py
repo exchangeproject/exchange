@@ -1,3 +1,3 @@
 from ..common import api
 
-from . import address, wallets, assets, capabilities, isalive, balances, history, transactions
+from . import address, assets, capabilities, isalive, balances, history, transactions, broadcast
